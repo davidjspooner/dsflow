@@ -1,0 +1,60 @@
+package duration
+
+import (
+	"fmt"
+	"reflect"
+	"testing"
+	"time"
+)
+
+func SameErrorMessages(err1, err2 error) bool {
+	var msg1, msg2 string
+	if err1 != nil {
+		msg1 = err1.Error()
+	}
+	if err2 != nil {
+		msg2 = err2.Error()
+	}
+	return msg1 == msg2
+}
+
+func TestParseList(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected List
+		err      error
+	}{
+		{
+			input:    "1s,2m,3h",
+			expected: List{time.Second, 2 * time.Minute, 3 * time.Hour},
+			err:      nil,
+		},
+		{
+			input:    "500ms,1s,2s",
+			expected: List{500 * time.Millisecond, time.Second, 2 * time.Second},
+			err:      nil,
+		},
+		{
+			input:    "100us,200us,300us",
+			expected: List{100 * time.Microsecond, 200 * time.Microsecond, 300 * time.Microsecond},
+			err:      nil,
+		},
+		{
+			input:    "1h,2h,3h",
+			expected: List{time.Hour, 2 * time.Hour, 3 * time.Hour},
+			err:      nil,
+		},
+		{
+			input:    "garbage",
+			expected: nil,
+			err:      fmt.Errorf("time: invalid duration \"garbage\""),
+		},
+	}
+
+	for _, tc := range testCases {
+		result, err := ParseList(tc.input)
+		if !reflect.DeepEqual(result, tc.expected) || !SameErrorMessages(err, tc.err) {
+			t.Errorf("ParseList(%s) = %s, %v, expected %s, %v", tc.input, result, err, tc.expected, tc.err)
+		}
+	}
+}
