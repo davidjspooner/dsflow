@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+
+	"github.com/davidjspooner/dsflow/pkg/duration"
 )
 
 func PtrTo[T any](v T) *T {
@@ -15,7 +17,7 @@ type Helper struct {
 	MaxAttempts int
 	FastFail    []*regexp.Regexp
 	Pause       time.Duration
-	Interval    DurationList
+	Interval    duration.List
 	Timeout     time.Duration
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 func Sleep(ctx context.Context, d time.Duration) {
-	tflog.Info(ctx, "waiting", map[string]any{"duration": Format(d)})
+	tflog.Info(ctx, "waiting", map[string]any{"duration": d.String()})
 	select {
 	case <-ctx.Done():
 	case <-time.After(d):
