@@ -1,4 +1,4 @@
-module dsflow
+module github.com/davidjspooner/dsflow
 
 go 1.22.1
 
