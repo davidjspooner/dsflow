@@ -1,20 +1,20 @@
-package duration
+package job
 
 import "time"
 
-type Value struct {
+type DurationString struct {
 	Duration time.Duration
 }
 
-func (v *Value) String() string {
+func (v *DurationString) String() string {
 	return v.Duration.String()
 }
 
-func (v *Value) MarshalText() ([]byte, error) {
+func (v *DurationString) MarshalText() ([]byte, error) {
 	return []byte(v.String()), nil
 }
 
-func (v *Value) UnmarshalText(data []byte) error {
+func (v *DurationString) UnmarshalText(data []byte) error {
 	duration, err := time.ParseDuration(string(data))
 	if err != nil {
 		return err

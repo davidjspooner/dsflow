@@ -1,4 +1,4 @@
-package dependancy
+package job
 
 type Node interface {
 	ID() string

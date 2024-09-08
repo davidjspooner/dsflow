@@ -1,4 +1,4 @@
-package duration
+package job
 
 import (
 	"fmt"
@@ -21,27 +21,27 @@ func SameErrorMessages(err1, err2 error) bool {
 func TestParseList(t *testing.T) {
 	testCases := []struct {
 		input    string
-		expected List
+		expected DurationList
 		err      error
 	}{
 		{
 			input:    "1s,2m,3h",
-			expected: List{time.Second, 2 * time.Minute, 3 * time.Hour},
+			expected: DurationList{time.Second, 2 * time.Minute, 3 * time.Hour},
 			err:      nil,
 		},
 		{
 			input:    "500ms,1s,2s",
-			expected: List{500 * time.Millisecond, time.Second, 2 * time.Second},
+			expected: DurationList{500 * time.Millisecond, time.Second, 2 * time.Second},
 			err:      nil,
 		},
 		{
 			input:    "100us,200us,300us",
-			expected: List{100 * time.Microsecond, 200 * time.Microsecond, 300 * time.Microsecond},
+			expected: DurationList{100 * time.Microsecond, 200 * time.Microsecond, 300 * time.Microsecond},
 			err:      nil,
 		},
 		{
 			input:    "1h,2h,3h",
-			expected: List{time.Hour, 2 * time.Hour, 3 * time.Hour},
+			expected: DurationList{time.Hour, 2 * time.Hour, 3 * time.Hour},
 			err:      nil,
 		},
 		{
@@ -52,7 +52,7 @@ func TestParseList(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		result, err := ParseList(tc.input)
+		result, err := ParseDurationList(tc.input)
 		if !reflect.DeepEqual(result, tc.expected) || !SameErrorMessages(err, tc.err) {
 			t.Errorf("ParseList(%s) = %s, %v, expected %s, %v", tc.input, result, err, tc.expected, tc.err)
 		}

@@ -1,28 +1,28 @@
-package dependancy
+package job
 
 import (
 	"golang.org/x/exp/maps"
 )
 
-type wrapper struct {
+type nodeWrapper struct {
 	id         string
 	impl       Node
-	precursors []*wrapper
+	precursors []*nodeWrapper
 }
 
-type Graph struct {
-	all map[string]*wrapper
+type NodeGraph struct {
+	all map[string]*nodeWrapper
 }
 
-func NewGraph() *Graph {
-	return &Graph{
-		all: make(map[string]*wrapper),
+func NewNodeGraph() *NodeGraph {
+	return &NodeGraph{
+		all: make(map[string]*nodeWrapper),
 	}
 }
 
-func (f *Graph) AddNode(nodes ...Node) {
+func (f *NodeGraph) AddNode(nodes ...Node) {
 	for _, node := range nodes {
-		f.all[node.ID()] = &wrapper{
+		f.all[node.ID()] = &nodeWrapper{
 			id:   node.ID(),
 			impl: node,
 		}
@@ -37,41 +37,41 @@ func idsFromNodes(nodes ...Node) []string {
 	return ids
 }
 
-func (f *Graph) SetPrecursorNodes(node Node, precursors ...Node) error {
+func (f *NodeGraph) SetPrecursorNodes(node Node, precursors ...Node) error {
 	nodeId := node.ID()
 	precuserIds := idsFromNodes(precursors...)
 	return f.SetPrecursorIDs(nodeId, precuserIds...)
 }
 
-func (f *Graph) SetPrecursorIDs(id string, precursors ...string) error {
+func (f *NodeGraph) SetPrecursorIDs(id string, precursors ...string) error {
 	parent, ok := f.all[id]
 	if !ok {
-		return newError("unknow").withNodeIDs(id)
+		return newError().withNodeIDs(id).withCausef("unknown node")
 	}
 	parent.precursors = nil
 	for _, precursor := range precursors {
 		child, ok := f.all[precursor]
 		if !ok {
-			return newError("unknown").withNodeIDs(precursor)
+			return newError().withNodeIDs(precursor).withCausef("unknown precursor")
 		}
 		parent.precursors = append(parent.precursors, child)
 	}
 	return nil
 }
 
-func (f *Graph) PlanNodes(targets ...Node) ([]Node, error) {
+func (f *NodeGraph) PlanNodes(targets ...Node) (NodeArray, error) {
 	targetIds := idsFromNodes(targets...)
 	return f.PlanIDs(targetIds...)
 }
 
-func (f *Graph) PlanIDs(targetIds ...string) (NodeArray, error) {
+func (f *NodeGraph) PlanIDs(targetIds ...string) (NodeArray, error) {
 	plan := make(NodeArray, len(targetIds))
-	todoSet := make(map[string]*wrapper, len(targetIds))
+	todoSet := make(map[string]*nodeWrapper, len(targetIds))
 
 	for _, targetId := range targetIds {
 		target, ok := f.all[targetId]
 		if !ok {
-			return nil, newError("unknown").withNodeIDs(targetId)
+			return nil, newError().withNodeIDs(targetId).withCausef("unknown target")
 		}
 		todoSet[targetId] = target
 	}
@@ -94,7 +94,7 @@ func (f *Graph) PlanIDs(targetIds ...string) (NodeArray, error) {
 		}
 		if !progress && len(todoSet) > 0 {
 			keys := maps.Keys(todoSet)
-			return nil, newError("circular dependancy").withNodeIDs(keys...)
+			return nil, newError().withNodeIDs(keys...).withCausef("circular dependency")
 		}
 	}
 

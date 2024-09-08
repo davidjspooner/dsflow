@@ -1,13 +1,13 @@
-package retry
+package job
 
 import "fmt"
 
-type Error struct {
+type RetryError struct {
 	RecentAttempt error
 	AbortReason   error
 	Attempt       int
 }
 
-func (e *Error) Error() string {
+func (e *RetryError) Error() string {
 	return fmt.Sprintf("%v, %v", e.AbortReason, e.RecentAttempt)
 }

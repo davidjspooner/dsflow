@@ -1,19 +1,17 @@
-package duration
+package job
 
 import (
 	"strings"
 	"time"
 )
 
-type List []time.Duration
+type DurationList []time.Duration
 
-var unitMap map[string]time.Duration
-
-func ParseList(s string) (List, error) {
+func ParseDurationList(s string) (DurationList, error) {
 	parts := strings.FieldsFunc(s, func(r rune) bool {
 		return r == ',' || r == ' '
 	})
-	list := make(List, len(parts))
+	list := make(DurationList, len(parts))
 	for i, part := range parts {
 		duration, err := time.ParseDuration(part)
 		if err != nil {
@@ -24,7 +22,7 @@ func ParseList(s string) (List, error) {
 	return list, nil
 }
 
-func (list List) String() string {
+func (list DurationList) String() string {
 	if len(list) == 0 {
 		return "<undefined>"
 	}
@@ -38,12 +36,12 @@ func (list List) String() string {
 	return sb.String()
 }
 
-func (list List) MarshalText() ([]byte, error) {
+func (list DurationList) MarshalText() ([]byte, error) {
 	return []byte(list.String()), nil
 }
 
-func (list *List) UnmarshalText(data []byte) error {
-	l, err := ParseList(string(data))
+func (list *DurationList) UnmarshalText(data []byte) error {
+	l, err := ParseDurationList(string(data))
 	if err != nil {
 		return err
 	}
