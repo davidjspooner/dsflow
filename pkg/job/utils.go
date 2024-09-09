@@ -34,3 +34,7 @@ func Max[T constraints.Ordered](a T, others ...T) T {
 	}
 	return least
 }
+
+type Logger interface {
+	Printf(format string, v ...interface{})
+}

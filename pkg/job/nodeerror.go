@@ -13,13 +13,18 @@ type NodeIdError struct {
 }
 
 func (e *NodeIdError) Error() string {
-	nodeString := strings.Join(e.NodeIds, ", ")
-	return e.Cause.Error() + ": " + nodeString
+	sb := strings.Builder{}
+	for n, id := range e.NodeIds {
+		if n > 0 {
+			sb.WriteString(", ")
+		}
+		fmt.Fprintf(&sb, "%q", id)
+	}
+	return sb.String() + ": " + e.Cause.Error()
 }
 
 func newError() *NodeIdError {
-	return &NodeIdError{
-	}
+	return &NodeIdError{}
 }
 
 func (e *NodeIdError) withNodeIDs(ids ...string) *NodeIdError {
@@ -40,4 +45,3 @@ func (e *NodeIdError) withCause(err error) *NodeIdError {
 func (e *NodeIdError) withCausef(format string, args ...interface{}) *NodeIdError {
 	return e.withCause(fmt.Errorf(format, args...))
 }
-
