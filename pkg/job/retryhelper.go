@@ -40,6 +40,7 @@ func (rh *RetryHelper) Retry(ctx context.Context, fn func(ctx context.Context, a
 
 	rh.SetDefaults()
 
+	//tflog.Info(ctx, "waiting", map[string]any{"duration": d.String()}) //TODO add some form of dependancy logging
 	Sleep(ctx, rh.Pause)
 
 	err := &RetryError{}
@@ -55,6 +56,7 @@ func (rh *RetryHelper) Retry(ctx context.Context, fn func(ctx context.Context, a
 		}
 		if err.Attempt > 0 {
 			interval := rh.Interval[Min(err.Attempt-1, len(rh.Interval)-1)]
+			//tflog.Info(ctx, "waiting", map[string]any{"duration": d.String()}) //TODO add some form of dependancy logging
 			Sleep(ctx, interval)
 			err.AbortReason = ctx.Err()
 			if err.AbortReason != nil {

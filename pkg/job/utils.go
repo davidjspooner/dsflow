@@ -4,12 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golang.org/x/exp/constraints"
 )
 
 func Sleep(ctx context.Context, d time.Duration) {
-	tflog.Info(ctx, "waiting", map[string]any{"duration": d.String()})
 	select {
 	case <-ctx.Done():
 	case <-time.After(d):
@@ -37,4 +35,10 @@ func Max[T constraints.Ordered](a T, others ...T) T {
 
 type Logger interface {
 	Printf(format string, v ...interface{})
+}
+
+type LoggerFunc func(format string, v ...interface{})
+
+func (f LoggerFunc) Printf(format string, v ...interface{}) {
+	f(format, v...)
 }
